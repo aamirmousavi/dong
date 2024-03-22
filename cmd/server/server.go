@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/aamirmousavi/dong/internal/context"
 	"github.com/aamirmousavi/dong/internal/database/mongodb"
 	"github.com/aamirmousavi/dong/internal/router"
 )
@@ -13,5 +14,11 @@ func run(
 	if err != nil {
 		return err
 	}
-	return router.Run(mongodb, addr)
+	appContext := context.NewContext(
+		mongodb,
+	)
+	return router.Run(
+		appContext,
+		addr,
+	)
 }

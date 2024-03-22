@@ -2,13 +2,13 @@ package router
 
 import (
 	api_user "github.com/aamirmousavi/dong/internal/api/user"
-	"github.com/aamirmousavi/dong/internal/database/mongodb"
+	"github.com/aamirmousavi/dong/internal/context"
 	"github.com/aamirmousavi/dong/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func Run(
-	mongodb *mongodb.Handler,
+	appContext *context.Context,
 	addr string,
 ) error {
 	gin.SetMode(gin.ReleaseMode)
@@ -21,7 +21,12 @@ func Run(
 
 	router.Use(middleware.Gzip())
 
+	router.Use(middleware.NewContextHandler(appContext).AppContext())
+
+	authorizationMiddleware := middleware.NewAuthorizationHandler(appContext).Authorization
+
 	api_user.Configure(
+		authorizationMiddleware,
 		router.Group("/api/user"),
 	)
 

@@ -1,7 +1,35 @@
 package mongodb
 
-type Handler struct{}
+import (
+	"context"
+
+	mongodb_otp "github.com/aamirmousavi/dong/internal/database/mongodb/otp"
+	mongodb_user "github.com/aamirmousavi/dong/internal/database/mongodb/user"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+)
+
+type Handler struct {
+	*mongodb_otp.OTPHandler
+	*mongodb_user.UserHandler
+}
 
 func NewHandler(addr string) (*Handler, error) {
-	return nil, nil
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(addr))
+	if err != nil {
+		return nil, err
+	}
+	if err := client.Ping(context.Background(), readpref.Primary()); err != nil {
+		return nil, err
+	}
+	return &Handler{
+		mongodb_otp.NewHandler(
+			client.Database(mongodb_user.DATABASE_USER).
+				Collection(mongodb_otp.COLLECTION_OTP),
+		),
+		mongodb_user.NewHandler(
+			client.Database(mongodb_user.DATABASE_USER),
+		),
+	}, nil
 }
