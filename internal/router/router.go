@@ -30,5 +30,7 @@ func Run(
 		router.Group("/api/user"),
 	)
 
+	router.Use(authorizationMiddleware())
+
 	return router.Run(addr)
 }
