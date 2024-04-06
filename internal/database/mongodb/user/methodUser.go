@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (hand *UserHandler) UserExists(
@@ -46,4 +48,25 @@ func (hand *UserHandler) Get(
 		},
 	).Decode(usr)
 	return usr, err
+}
+
+func (hand *UserHandler) GetId(
+	ctx context.Context,
+	number string,
+) (*primitive.ObjectID, error) {
+	usr := new(struct {
+		Id primitive.ObjectID `bson:"_id"`
+	})
+	if err := hand.user.FindOne(
+		ctx,
+		bson.M{
+			"number": number,
+		},
+	).Decode(usr); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &usr.Id, nil
 }
