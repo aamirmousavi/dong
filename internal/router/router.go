@@ -1,6 +1,7 @@
 package router
 
 import (
+	api_contact "github.com/aamirmousavi/dong/internal/api/contact"
 	api_user "github.com/aamirmousavi/dong/internal/api/user"
 	"github.com/aamirmousavi/dong/internal/context"
 	"github.com/aamirmousavi/dong/internal/middleware"
@@ -31,6 +32,10 @@ func Run(
 	)
 
 	router.Use(authorizationMiddleware())
+
+	api_contact.Configure(
+		router.Group("/api/contact"),
+	)
 
 	return router.Run(addr)
 }
