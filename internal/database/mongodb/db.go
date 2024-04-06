@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 
+	mongodb_contact "github.com/aamirmousavi/dong/internal/database/mongodb/contact"
 	mongodb_otp "github.com/aamirmousavi/dong/internal/database/mongodb/otp"
 	mongodb_user "github.com/aamirmousavi/dong/internal/database/mongodb/user"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,6 +12,7 @@ import (
 )
 
 type Handler struct {
+	*mongodb_contact.ContactHandler
 	*mongodb_otp.OTPHandler
 	*mongodb_user.UserHandler
 }
@@ -24,6 +26,10 @@ func NewHandler(addr string) (*Handler, error) {
 		return nil, err
 	}
 	return &Handler{
+		mongodb_contact.NewHandler(
+			client.Database(mongodb_user.DATABASE_USER).
+				Collection(mongodb_contact.COLLECTION_CONTACT),
+		),
 		mongodb_otp.NewHandler(
 			client.Database(mongodb_user.DATABASE_USER).
 				Collection(mongodb_otp.COLLECTION_OTP),
