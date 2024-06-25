@@ -13,7 +13,7 @@ func (hand *ContactHandler) Add(c *Contact) error {
 }
 
 func (hand *ContactHandler) GetByContactOf(contactOf primitive.ObjectID) ([]*Contact, error) {
-	cursor, err := hand.contact.Find(context.TODO(), bson.M{"content_of": contactOf})
+	cursor, err := hand.contact.Find(context.TODO(), bson.M{"contact_of": contactOf})
 	if err != nil {
 		return nil, err
 	}

@@ -9,7 +9,7 @@ type Contact struct {
 	LastName  string             `bson:"last_name" json:"last_name"`
 	Pic       *string            `bson:"pic" json:"pic"`
 	UserId    primitive.ObjectID `bson:"user_id" json:"user_id"`
-	ContentOf primitive.ObjectID `bson:"content_of" json:"content_of"`
+	ContactOf primitive.ObjectID `bson:"contact_of" json:"contact_of"`
 }
 
 func NewContact(

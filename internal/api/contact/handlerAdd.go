@@ -84,7 +84,7 @@ func add(ctx *gin.Context) {
 		).GenerateId()
 	}
 
-	cnct.ContentOf = profile.User.Id
+	cnct.ContactOf = profile.User.Id
 	if err := app.Mongo().ContactHandler.Add(cnct); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
