@@ -16,6 +16,7 @@ func list(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+
 	ctx.JSON(200, gin.H{
 		"data": list,
 	})

@@ -10,6 +10,9 @@ type Contact struct {
 	Pic       *string            `bson:"pic" json:"pic"`
 	UserId    primitive.ObjectID `bson:"user_id" json:"user_id"`
 	ContactOf primitive.ObjectID `bson:"contact_of" json:"contact_of"`
+
+	Demand *uint64 `bson:"demand,omitempty" json:"demand,omitempty"`
+	Debt   *uint64 `bson:"debt,omitempty" json:"debt,omitempty"`
 }
 
 func NewContact(
