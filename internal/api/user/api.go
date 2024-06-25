@@ -17,5 +17,10 @@ func Configure(
 	group.Use(authorizationMiddleware())
 
 	group.GET("/profile", profile)
+	group.PUT("/profile/update", profileUpdate)
+
+	group.PUT("/bank/update", bankUpdate)
+	group.GET("/bank/get", bankGet)
+
 	group.POST("/logout", logout)
 }

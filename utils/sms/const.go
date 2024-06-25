@@ -43,5 +43,6 @@ func Send(
 	if response.StatusCode != 200 {
 		return fmt.Errorf("status wasn't 200 body: %v", string(reponseBody))
 	}
+	println(string(reponseBody))
 	return nil
 }

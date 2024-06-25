@@ -7,11 +7,12 @@ type User struct {
 	FirstName string             `bson:"first_name" json:"first_name"`
 	LastName  string             `bson:"last_name" json:"last_name"`
 	Number    string             `bson:"number" json:"number"`
-	Pic       string             `bson:"pic" json:"pic"`
+	Pic       *string            `bson:"pic" json:"pic"`
 }
 
 func NewUser(
-	firstName, lastName, number, pic string,
+	firstName, lastName, number string,
+	pic *string,
 ) *User {
 	return &User{
 		FirstName: firstName,

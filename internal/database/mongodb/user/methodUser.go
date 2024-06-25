@@ -47,3 +47,20 @@ func (hand *UserHandler) Get(
 	).Decode(usr)
 	return usr, err
 }
+
+func (hand *UserHandler) Update(
+	ctx context.Context,
+	usr *User,
+) error {
+	_, err := hand.user.UpdateOne(
+		ctx,
+		bson.M{
+			"number": usr.Number,
+			"_id":    usr.Id,
+		},
+		bson.M{
+			"$set": usr,
+		},
+	)
+	return err
+}

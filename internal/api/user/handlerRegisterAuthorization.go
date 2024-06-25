@@ -57,15 +57,19 @@ func registerAuthorization(ctx *gin.Context) {
 		return
 	}
 	id := primitive.NewObjectID()
-	iamgeAddr, err := image.Profile(params.Pic, id.Hex())
-	if err != nil {
-		ctx.JSON(500, gin.H{
-			"message": "خطای داخلی",
-			"desc":    err.Error(),
-		})
-		return
+	var pic *string
+	if params.Pic != nil {
+		iamgeAddr, err := image.Profile(params.Pic, id.Hex())
+		if err != nil {
+			ctx.JSON(500, gin.H{
+				"message": "خطای داخلی",
+				"desc":    err.Error(),
+			})
+			return
+		}
+		pic = &iamgeAddr
 	}
-	usr := user.NewUser(params.FirstName, params.LastName, params.Number, iamgeAddr).SetId(id)
+	usr := user.NewUser(params.FirstName, params.LastName, params.Number, pic).SetId(id)
 	if err := app.Mongo().UserHandler.Create(ctx, usr); err != nil {
 		ctx.JSON(500, gin.H{
 			"message": "خطای داخلی",

@@ -20,8 +20,11 @@ func generateFileName(
 	}
 	folders := strings.Split(full, "/")
 	for i := range folders {
+		if folders[i] == "" {
+			continue
+		}
 		if i > 0 {
-			folders[i] = folders[i-1] + folders[i]
+			folders[i] = folders[i-1] + "/" + folders[i]
 		}
 		if err := utils_file.MkdirIfNotExsits(folders[i]); err != nil {
 			return "", err

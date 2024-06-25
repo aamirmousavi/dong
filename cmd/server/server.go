@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/aamirmousavi/dong/internal/context"
 	"github.com/aamirmousavi/dong/internal/database/mongodb"
 	"github.com/aamirmousavi/dong/internal/router"
@@ -17,6 +19,7 @@ func run(
 	appContext := context.NewContext(
 		mongodb,
 	)
+	fmt.Printf("Server is running on %s\n", addr)
 	return router.Run(
 		appContext,
 		addr,

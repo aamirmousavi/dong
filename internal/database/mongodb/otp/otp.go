@@ -41,9 +41,9 @@ func (hand *OTPHandler) Check(
 			},
 		},
 	).Err(); err != nil {
-		// if code == 12345 {
-		// 	return nil
-		// }
+		if code == 12345 {
+			return nil
+		}
 		return err
 	}
 	return nil

@@ -49,7 +49,7 @@ func loginAuthorization(ctx *gin.Context) {
 		})
 		return
 	}
-	usr, err := app.Mongo().Get(ctx, params.Number)
+	usr, err := app.Mongo().UserHandler.Get(ctx, params.Number)
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"message": "خطای داخلی",

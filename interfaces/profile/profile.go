@@ -1,4 +1,4 @@
-package profile
+package interfaces_profile
 
 import (
 	"github.com/aamirmousavi/dong/internal/database/mongodb/user"
@@ -22,6 +22,6 @@ func New(
 	}
 }
 
-func GetProfile(ctx *gin.Context) Profile {
-	return ctx.MustGet(PROFILE).(Profile)
+func GetProfile(ctx *gin.Context) *Profile {
+	return ctx.MustGet(PROFILE).(*Profile)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (hand *UserHandler) CreateToken(
@@ -69,11 +70,11 @@ func (hand *UserHandler) GetUserByToken(
 	}
 	defer cursor.Close(ctx)
 	var usr User
-	if cursor.Next(ctx) {
-		err = cursor.Decode(&usr)
-		if err != nil {
-			return nil, err
-		}
+	if !cursor.Next(ctx) {
+		return nil, mongo.ErrNoDocuments
+	}
+	if err := cursor.Decode(&usr); err != nil {
+		return nil, err
 	}
 	return &usr, nil
 }

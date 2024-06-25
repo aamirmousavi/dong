@@ -6,6 +6,7 @@ type UserHandler struct {
 	database *mongo.Database
 	user     *mongo.Collection
 	token    *mongo.Collection
+	bank     *mongo.Collection
 }
 
 func NewHandler(
@@ -15,5 +16,6 @@ func NewHandler(
 		database,
 		database.Collection(_COLLECTION_USER),
 		database.Collection(_COLLECTION_TOKEN),
+		database.Collection(_COLLECTION_BANK),
 	}
 }
