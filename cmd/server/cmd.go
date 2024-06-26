@@ -22,6 +22,7 @@ func init() {
 	ServerCmd.Flags().StringVarP(&smsPassword, "sms-password", "p", smsPassword, "sms password")
 	hasConfig := false
 	ServerCmd.Flags().BoolVarP(&hasConfig, "config", "c", hasConfig, "use config file")
+	hasConfig = true
 	if hasConfig {
 		if err := loadConfig(); err != nil {
 			fmt.Fprintln(os.Stderr, err)
