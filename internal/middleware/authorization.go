@@ -47,7 +47,7 @@ func (ah *authorizationHandler) Authorization() gin.HandlerFunc {
 		}
 
 		if err == mongo.ErrNoDocuments {
-			ctx.JSON(400, gin.H{
+			ctx.JSON(401, gin.H{
 				"message": "اطلاعات ورود نامعتبر است",
 			})
 			ctx.Abort()
