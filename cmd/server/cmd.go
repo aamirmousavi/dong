@@ -20,6 +20,14 @@ func init() {
 	ServerCmd.Flags().StringVarP(&mongodbAddr, "mongodb", "m", mongodbAddr, "mongodb address")
 	ServerCmd.Flags().StringVarP(&smsUsername, "sms-username", "u", smsUsername, "sms username")
 	ServerCmd.Flags().StringVarP(&smsPassword, "sms-password", "p", smsPassword, "sms password")
+	hasConfig := false
+	ServerCmd.Flags().BoolVarP(&hasConfig, "config", "c", hasConfig, "use config file")
+	if hasConfig {
+		if err := loadConfig(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
 }
 
 var ServerCmd = &cobra.Command{
