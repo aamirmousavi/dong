@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -28,12 +29,18 @@ func loadConfig() error {
 		return err
 	}
 
-	addr = config.Addr
-	mongodbAddr = config.MongodbAddr
-	smsUsername = config.SmsUsername
-	smsPassword = config.SmsPassword
+	setConfigVariable(&addr, config.Addr)
+	setConfigVariable(&mongodbAddr, config.MongodbAddr)
+	setConfigVariable(&smsUsername, config.SmsUsername)
+	setConfigVariable(&smsPassword, config.SmsPassword)
+
+	fmt.Println("Config loaded successfully")
 
 	return nil
+}
+
+func setConfigVariable(_var *string, _val string) {
+	*_var = _val
 }
 
 func setAddressSiblingsExecutable(filename string) (string, error) {
