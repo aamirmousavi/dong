@@ -21,6 +21,8 @@ func Run(
 
 	router.Use(gin.Recovery())
 
+	router.Use(middleware.AllowOptions())
+
 	api := router.Group("/api")
 	api.Use(middleware.CORS())
 
@@ -61,8 +63,6 @@ func Run(
 		}
 		ctx.Writer.Write(data)
 	})
-
-	router.Use(middleware.CORS())
 
 	return router.Run(addr)
 }
