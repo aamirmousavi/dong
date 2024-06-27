@@ -76,6 +76,8 @@ func add(ctx *gin.Context) {
 	for _, user := range factor.Users {
 		userPrice := (factor.Price / sumOfCoefficient) * user.Coefficient
 		balanceList = append(balanceList, balance.NewBalance(
+			peroidId,
+			factor.PeroidId,
 			factor.Buyer,
 			user.UserId,
 			userPrice,

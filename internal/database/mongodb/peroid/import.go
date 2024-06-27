@@ -1,6 +1,8 @@
 package peroid
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type PeroidHandler struct {
 	database *mongo.Database
