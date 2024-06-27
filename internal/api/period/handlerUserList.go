@@ -1,8 +1,6 @@
 package period
 
 import (
-	"fmt"
-
 	interfaces_context "github.com/aamirmousavi/dong/interfaces/context"
 	"github.com/aamirmousavi/dong/utils/bind"
 	"github.com/gin-gonic/gin"
@@ -31,8 +29,6 @@ func userList(ctx *gin.Context) {
 		return
 	}
 
-	ss := fmt.Sprintf("%v", peroid.UserIds)
-
 	users, err := app.Mongo().UserHandler.GetMany(ctx, peroid.UserIds)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -59,7 +55,6 @@ func userList(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"data":  periodUsers,
-		"_text": ss,
+		"data": periodUsers,
 	})
 }

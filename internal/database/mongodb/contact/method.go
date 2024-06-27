@@ -7,6 +7,23 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+func (hand *ContactHandler) GetByIds(ids []primitive.ObjectID) ([]*Contact, error) {
+	cursor, err := hand.contact.Find(context.TODO(), bson.M{"_id": bson.M{"$in": ids}})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	list := []*Contact{}
+	for cursor.Next(context.Background()) {
+		c := &Contact{}
+		if err := cursor.Decode(c); err != nil {
+			return nil, err
+		}
+		list = append(list, c)
+	}
+	return list, nil
+}
+
 func (hand *ContactHandler) Add(c *Contact) error {
 	_, err := hand.contact.InsertOne(context.TODO(), c)
 	return err

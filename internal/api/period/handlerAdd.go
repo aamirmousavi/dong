@@ -31,10 +31,19 @@ func add(ctx *gin.Context) {
 	}
 	app := interfaces_context.GetAppContext(ctx)
 	profile := interfaces_profile.GetProfile(ctx)
+	contacts, err := app.Mongo().ContactHandler.GetByIds(oids)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	userIds := make([]primitive.ObjectID, 0)
+	for _, c := range contacts {
+		userIds = append(userIds, c.UserId)
+	}
 	per := peroid.NewPeroid(
 		profile.User.Id,
 		p.Title,
-		oids,
+		userIds,
 	).GenerateId()
 	per.UserCount = uint64(len(oids))
 	if err := app.Mongo().PeroidHandler.Add(per); err != nil {
