@@ -62,5 +62,7 @@ func Run(
 		ctx.Writer.Write(data)
 	})
 
+	router.Use(middleware.CORS())
+
 	return router.Run(addr)
 }
