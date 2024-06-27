@@ -47,7 +47,9 @@ func Run(
 		)
 	}
 
-	router.GET("/storage/*path", func(ctx *gin.Context) {
+	storage := router.Group("/storage")
+
+	storage.GET("/*path", func(ctx *gin.Context) {
 		data, err := os.ReadFile(
 			"/storage" + ctx.Param("path"),
 		)
