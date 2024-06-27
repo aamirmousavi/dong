@@ -12,7 +12,8 @@ func Configure(
 	group.GET("/list", list)
 	group.POST("/add", add)
 	group.GET("/get", get)
-	group.PUT("/add_user", addUser)
+	group.PUT("/user/add", userAdd)
+	group.GET("/user/list", userList)
 
 	api_factor.Configure(
 		group.Group("/factor"),

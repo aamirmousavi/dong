@@ -31,7 +31,12 @@ func (hand *PeroidHandler) Get(
 func (hand *PeroidHandler) GetByUserId(
 	userId primitive.ObjectID,
 ) ([]*Peroid, error) {
-	cursor, err := hand.peroid.Find(context.Background(), bson.M{"$or": []bson.M{{"user_id": userId}, {"user_ids": bson.M{"$in": []primitive.ObjectID{userId}}}}})
+	cursor, err := hand.peroid.Find(context.Background(), bson.M{
+		"$or": []bson.M{
+			{"user_id": userId},
+			// {"user_ids": bson.M{"$in": []primitive.ObjectID{userId}}},
+		},
+	})
 	if err != nil {
 		return nil, err
 	}

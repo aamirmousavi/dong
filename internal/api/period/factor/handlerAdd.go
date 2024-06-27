@@ -11,10 +11,11 @@ import (
 )
 
 type addRequest struct {
-	Title string `json:"title" binding:"required"`
-	Price uint64 `json:"price" binding:"required"`
-	Buyer string `json:"buyer" binding:"required"`
-	Users []struct {
+	PeroidId string `json:"peroid_id" binding:"required"`
+	Title    string `json:"title" binding:"required"`
+	Price    uint64 `json:"price" binding:"required"`
+	Buyer    string `json:"buyer" binding:"required"`
+	Users    []struct {
 		UserId      string `json:"user_id" binding:"required"`
 		Coefficient uint64 `json:"coefficient" binding:"required"`
 	} `json:"users" binding:"required"`
@@ -46,14 +47,20 @@ func add(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-
+	peroidId, err := primitive.ObjectIDFromHex(p.PeroidId)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 	factor := peroid.NewFactor(
 		p.Title,
 		profile.User.Id,
 		p.Price,
 		buyer,
 		UserWithCoefficient,
+		peroidId,
 	).GenerateId()
+
 	/*
 		Go create balance for each user in factor
 		user.each(
@@ -76,6 +83,11 @@ func add(ctx *gin.Context) {
 	}
 
 	if err := app.Mongo().BalanceHandler.Add(balanceList...); err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := app.Mongo().PeroidHandler.FactorAdd(factor); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}

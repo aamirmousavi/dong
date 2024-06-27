@@ -7,19 +7,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type addUserRequest struct {
-	Id     string `json:"id" binding:"required"`
-	UserId string `json:"user_id" binding:"required"`
+type userAddRequest struct {
+	PeroidId string `form:"peroid_id" binding:"required"`
+	UserId   string `form:"user_id" binding:"required"`
 }
 
-func addUser(ctx *gin.Context) {
-	p, err := bind.BindJson[addUserRequest](ctx)
+func userAdd(ctx *gin.Context) {
+	p, err := bind.Bind[userAddRequest](ctx)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	app := interfaces_context.GetAppContext(ctx)
-	oid, err := primitive.ObjectIDFromHex(p.Id)
+	oid, err := primitive.ObjectIDFromHex(p.PeroidId)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return

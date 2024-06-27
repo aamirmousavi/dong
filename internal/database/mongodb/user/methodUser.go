@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (hand *UserHandler) UserExists(
@@ -46,6 +47,23 @@ func (hand *UserHandler) Get(
 		},
 	).Decode(usr)
 	return usr, err
+}
+
+func (hand *UserHandler) GetMany(ctx context.Context, ids []primitive.ObjectID) ([]*User, error) {
+	cursor, err := hand.user.Find(ctx, bson.M{"_id": bson.M{"$in": ids}})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	var users []*User
+	for cursor.Next(ctx) {
+		var user User
+		if err := cursor.Decode(&user); err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	return users, nil
 }
 
 func (hand *UserHandler) Update(
