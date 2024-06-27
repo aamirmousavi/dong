@@ -2,6 +2,7 @@ package contacts
 
 import (
 	interfaces_context "github.com/aamirmousavi/dong/interfaces/context"
+	interfaces_profile "github.com/aamirmousavi/dong/interfaces/profile"
 	"github.com/aamirmousavi/dong/utils/bind"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,7 +29,26 @@ func get(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	profile := interfaces_profile.GetProfile(ctx)
+	peroids, err := app.Mongo().PeroidHandler.ListWithContact(
+		profile.User.Id,
+		cnct.UserId,
+	)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	payments, err := app.Mongo().BalanceHandler.PaymentListWithContact(
+		profile.User.Id,
+		cnct.UserId,
+	)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	ctx.JSON(200, gin.H{
-		"data": cnct,
+		"data":     cnct,
+		"peroids":  peroids,
+		"payments": payments,
 	})
 }

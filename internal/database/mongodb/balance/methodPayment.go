@@ -67,3 +67,25 @@ func (hand *BalanceHandler) PaymentList(
 	}
 	return list, nil
 }
+
+func (hand *BalanceHandler) PaymentListWithContact(
+	userId primitive.ObjectID,
+	contactUserId primitive.ObjectID,
+) (PaymentList, error) {
+	cursor, err := hand.payment.Find(
+		context.Background(),
+		bson.M{"$or": []bson.M{
+			{"source_user_id": userId, "target_user_id": contactUserId},
+			{"source_user_id": contactUserId, "target_user_id": userId},
+		}},
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	var list PaymentList
+	if err := cursor.All(context.Background(), &list); err != nil {
+		return nil, err
+	}
+	return list, nil
+}

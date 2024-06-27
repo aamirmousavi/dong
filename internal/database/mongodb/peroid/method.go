@@ -7,6 +7,27 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+func (hand *PeroidHandler) ListWithContact(
+	userId primitive.ObjectID,
+	contactUserId primitive.ObjectID,
+) ([]*Peroid, error) {
+	cursor, err := hand.peroid.Find(context.Background(), bson.M{
+		"$and": []bson.M{
+			{"user_id": userId},
+			{"user_ids": bson.M{"$in": []primitive.ObjectID{userId}}},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	list := []*Peroid{}
+	if err := cursor.All(context.Background(), &list); err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
 func (hand *PeroidHandler) Add(
 	peroid *Peroid,
 ) error {
