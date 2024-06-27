@@ -4,6 +4,7 @@ import (
 	"os"
 
 	api_contact "github.com/aamirmousavi/dong/internal/api/contact"
+	api_financial "github.com/aamirmousavi/dong/internal/api/financial"
 	api_period "github.com/aamirmousavi/dong/internal/api/period"
 	api_user "github.com/aamirmousavi/dong/internal/api/user"
 	"github.com/aamirmousavi/dong/internal/context"
@@ -45,6 +46,11 @@ func Run(
 		api_period.Configure(
 			api.Group("/period"),
 		)
+
+		api_financial.Configure(
+			api.Group("/financial"),
+		)
+
 	}
 
 	storage := router.Group("/storage")
