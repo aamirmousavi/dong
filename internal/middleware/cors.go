@@ -20,14 +20,3 @@ func CORS() gin.HandlerFunc {
 	}
 
 }
-
-func AllowOptions() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		if ctx.Request.Method == "OPTIONS" {
-			ctx.AbortWithStatus(204)
-			return
-		}
-
-		ctx.Next()
-	}
-}
