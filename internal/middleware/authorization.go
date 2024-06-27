@@ -48,7 +48,7 @@ func (ah *authorizationHandler) Authorization() gin.HandlerFunc {
 
 		if err == mongo.ErrNoDocuments {
 			ctx.JSON(401, gin.H{
-				"message": "اطلاعات ورود نامعتبر است",
+				"message": "توکن شما معتبر نیست",
 			})
 			ctx.Abort()
 			return
