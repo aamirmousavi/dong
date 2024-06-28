@@ -13,7 +13,6 @@ type updateRequest struct {
 	Id           string  `form:"id" binding:"required"`
 	Title        string  `form:"title"`
 	PeroidId     *string `form:"peroid_id"`
-	FactorId     *string `form:"factor_id"`
 	SourceUserId *string `form:"source_user_id"`
 	TargetUserId string  `form:"target_user_id"`
 	Amount       uint64  `form:"amount"`
@@ -31,7 +30,7 @@ func update(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	var PeroidId, FactorId *primitive.ObjectID
+	var PeroidId *primitive.ObjectID
 	var sourceUserId primitive.ObjectID
 	if p.PeroidId != nil {
 		pid, err := primitive.ObjectIDFromHex(*p.PeroidId)
@@ -40,12 +39,6 @@ func update(ctx *gin.Context) {
 			return
 		}
 		PeroidId = &pid
-		fid, err := primitive.ObjectIDFromHex(*p.FactorId)
-		if err != nil {
-			ctx.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		FactorId = &fid
 	} else {
 		profile := interfaces_profile.GetProfile(ctx)
 		sourceUserId = profile.User.Id
@@ -59,7 +52,6 @@ func update(ctx *gin.Context) {
 	payment := balance.NewPayment(
 		p.Title,
 		PeroidId,
-		FactorId,
 		sourceUserId,
 		targetUserId,
 		p.Amount,

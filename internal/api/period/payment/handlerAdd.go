@@ -12,7 +12,6 @@ import (
 type addRequest struct {
 	Title        string  `form:"title"`
 	PeroidId     *string `form:"peroid_id"`
-	FactorId     *string `form:"factor_id"`
 	SourceUserId *string `form:"source_user_id"`
 	TargetUserId string  `form:"target_user_id"`
 	Amount       uint64  `form:"amount"`
@@ -25,7 +24,7 @@ func add(ctx *gin.Context) {
 		return
 	}
 	app := interfaces_context.GetAppContext(ctx)
-	var PeroidId, FactorId *primitive.ObjectID
+	var PeroidId *primitive.ObjectID
 	var sourceUserId primitive.ObjectID
 	if p.PeroidId != nil {
 		pid, err := primitive.ObjectIDFromHex(*p.PeroidId)
@@ -34,12 +33,6 @@ func add(ctx *gin.Context) {
 			return
 		}
 		PeroidId = &pid
-		fid, err := primitive.ObjectIDFromHex(*p.FactorId)
-		if err != nil {
-			ctx.JSON(400, gin.H{"error": err.Error()})
-			return
-		}
-		FactorId = &fid
 	} else {
 		profile := interfaces_profile.GetProfile(ctx)
 		sourceUserId = profile.User.Id
@@ -53,7 +46,6 @@ func add(ctx *gin.Context) {
 	payment := balance.NewPayment(
 		p.Title,
 		PeroidId,
-		FactorId,
 		sourceUserId,
 		targetUserId,
 		p.Amount,
