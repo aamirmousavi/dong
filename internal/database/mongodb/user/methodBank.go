@@ -27,7 +27,7 @@ func (hand *UserHandler) UpdateBank(
 func (hand *UserHandler) GetBank(
 	id primitive.ObjectID,
 ) (*Bank, error) {
-	bank := new(Bank)
+	bank := &Bank{}
 	if err := hand.bank.FindOne(
 		context.TODO(),
 		bson.M{

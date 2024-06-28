@@ -44,3 +44,21 @@ func (hand *PeroidHandler) FactorList(peroidId primitive.ObjectID) ([]*Factor, e
 	}
 	return list, nil
 }
+
+func (hand *PeroidHandler) FactorListByUser(userId primitive.ObjectID) ([]*Factor, error) {
+	cursor, err := hand.factor.Find(
+		context.TODO(),
+		bson.M{
+			"user_id": userId,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	var list []*Factor
+	if err := cursor.All(context.Background(), &list); err != nil {
+		return nil, err
+	}
+	return list, nil
+}
