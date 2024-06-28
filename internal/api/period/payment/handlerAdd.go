@@ -26,16 +26,16 @@ func add(ctx *gin.Context) {
 	app := interfaces_context.GetAppContext(ctx)
 	var PeroidId *primitive.ObjectID
 	var sourceUserId primitive.ObjectID
-	if p.PeroidId != nil {
+	if p.PeroidId == nil {
+		profile := interfaces_profile.GetProfile(ctx)
+		sourceUserId = profile.User.Id
+	} else {
 		pid, err := primitive.ObjectIDFromHex(*p.PeroidId)
 		if err != nil {
 			ctx.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
 		PeroidId = &pid
-	} else {
-		profile := interfaces_profile.GetProfile(ctx)
-		sourceUserId = profile.User.Id
 	}
 	targetUserId, err := primitive.ObjectIDFromHex(p.TargetUserId)
 	if err != nil {
