@@ -37,6 +37,13 @@ func add(ctx *gin.Context) {
 		}
 		PeroidId = &pid
 	}
+	if p.SourceUserId != nil {
+		sourceUserId, err = primitive.ObjectIDFromHex(*p.SourceUserId)
+		if err != nil {
+			ctx.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+	}
 	targetUserId, err := primitive.ObjectIDFromHex(p.TargetUserId)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
