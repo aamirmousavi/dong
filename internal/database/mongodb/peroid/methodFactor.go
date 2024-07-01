@@ -45,6 +45,28 @@ func (hand *PeroidHandler) FactorList(peroidId primitive.ObjectID) ([]*Factor, e
 	return list, nil
 }
 
+func (hand *PeroidHandler) FactorListWithContact(
+	userId primitive.ObjectID,
+	contactUserId primitive.ObjectID,
+) ([]*Factor, error) {
+	cursor, err := hand.factor.Find(
+		context.Background(),
+		bson.M{"$or": []bson.M{
+			{"buyer": userId, "users.user_id": bson.M{"$in": []primitive.ObjectID{contactUserId}}},
+			{"buyer": contactUserId, "users.user_id": bson.M{"$in": []primitive.ObjectID{userId}}},
+		}},
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	var list []*Factor
+	if err := cursor.All(context.Background(), &list); err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
 func (hand *PeroidHandler) FactorListByUser(userId primitive.ObjectID) ([]*Factor, error) {
 	cursor, err := hand.factor.Find(
 		context.TODO(),
