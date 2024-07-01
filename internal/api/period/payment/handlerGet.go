@@ -2,6 +2,7 @@ package payment
 
 import (
 	interfaces_context "github.com/aamirmousavi/dong/interfaces/context"
+	"github.com/aamirmousavi/dong/lib"
 	"github.com/aamirmousavi/dong/utils/bind"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,5 +29,7 @@ func get(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	payment.SourceUserName = lib.Ptr("source user name")
+	payment.TargetUserName = lib.Ptr("target user name")
 	ctx.JSON(200, gin.H{"payment": payment})
 }

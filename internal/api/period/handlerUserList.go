@@ -3,6 +3,7 @@ package period
 import (
 	interfaces_context "github.com/aamirmousavi/dong/interfaces/context"
 	interfaces_profile "github.com/aamirmousavi/dong/interfaces/profile"
+	"github.com/aamirmousavi/dong/lib"
 	"github.com/aamirmousavi/dong/utils/bind"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -42,6 +43,7 @@ func userList(ctx *gin.Context) {
 		MoneySpend uint64  `json:"money_spend"`
 		Demand     *uint64 `json:"demand"`
 		Debt       *uint64 `json:"debt"`
+		CardNumber *string `json:"card_number"`
 	}
 	profile := interfaces_profile.GetProfile(ctx)
 	periodUsers := []Person{
@@ -51,6 +53,7 @@ func userList(ctx *gin.Context) {
 			MoneySpend: 2000,
 			Demand:     nil,
 			Debt:       nil,
+			CardNumber: lib.Ptr("6037-9977-1234-5678"),
 		},
 	}
 	for _, user := range users {
@@ -60,6 +63,7 @@ func userList(ctx *gin.Context) {
 			MoneySpend: 1000,
 			Demand:     nil,
 			Debt:       nil,
+			CardNumber: lib.Ptr("6037-9977-1234-5678"),
 		})
 	}
 
