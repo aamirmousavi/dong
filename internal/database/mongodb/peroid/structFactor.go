@@ -3,13 +3,14 @@ package peroid
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Factor struct {
-	Id       primitive.ObjectID    `bson:"_id" json:"id"`
-	Title    string                `bson:"title" json:"title"`
-	UserId   primitive.ObjectID    `bson:"user_id" json:"user_id"`
-	Price    uint64                `bson:"price" json:"price"`
-	Buyer    primitive.ObjectID    `bson:"buyer" json:"buyer"`
-	Users    []UserWithCoefficient `bson:"users" json:"users"`
-	PeroidId primitive.ObjectID    `bson:"peroid_id" json:"peroid_id"`
+	Id        primitive.ObjectID    `bson:"_id" json:"id"`
+	Title     string                `bson:"title" json:"title"`
+	UserId    primitive.ObjectID    `bson:"user_id" json:"user_id"`
+	Price     uint64                `bson:"price" json:"price"`
+	Buyer     primitive.ObjectID    `bson:"buyer" json:"buyer"`
+	BuyerName *string               `bson:"buyer_name,omitempty" json:"buyer_name,omitempty"`
+	Users     []UserWithCoefficient `bson:"users" json:"users"`
+	PeroidId  primitive.ObjectID    `bson:"peroid_id" json:"peroid_id"`
 }
 
 type UserWithCoefficient struct {

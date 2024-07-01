@@ -3,6 +3,7 @@ package financial
 import (
 	interfaces_context "github.com/aamirmousavi/dong/interfaces/context"
 	interfaces_profile "github.com/aamirmousavi/dong/interfaces/profile"
+	"github.com/aamirmousavi/dong/lib"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,6 +14,10 @@ func get(ctx *gin.Context) {
 		nil,
 		&profile.User.Id,
 	)
+	for _, p := range payments {
+		p.SourceUserName = lib.Ptr("source user name")
+		p.TargetUserName = lib.Ptr("target user name")
+	}
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -22,6 +27,9 @@ func get(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
+	}
+	for _, f := range factors {
+		f.BuyerName = lib.Ptr("buyer name")
 	}
 
 	ctx.JSON(200, gin.H{
