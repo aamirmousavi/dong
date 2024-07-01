@@ -46,12 +46,19 @@ func get(ctx *gin.Context) {
 		}
 		f.BuyerName = lib.Ptr(buyerUser.FirstName + " " + buyerUser.LastName)
 	}
-
+	peroids, err := app.Mongo().PeroidHandler.GetByUserId(
+		profile.User.Id,
+	)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	ctx.JSON(200, gin.H{
 		"total_demand": 1_000,
 		"total_debt":   2_000,
 		"payments":     payments,
 		"factors":      factors,
+		"peroids":      peroids,
 	})
 
 }
