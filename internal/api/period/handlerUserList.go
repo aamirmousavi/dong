@@ -57,13 +57,19 @@ func userList(ctx *gin.Context) {
 		},
 	}
 	for _, user := range users {
+		card, err := app.Mongo().GetBank(user.Id)
+		if err != nil {
+			ctx.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
 		periodUsers = append(periodUsers, Person{
 			Id:         user.Id.Hex(),
 			Name:       user.FirstName + " " + user.LastName,
 			MoneySpend: 1000,
 			Demand:     nil,
 			Debt:       nil,
-			CardNumber: lib.Ptr("6037-9977-1234-5678"),
+			CardNumber: &card.CardNumber,
 		})
 	}
 
