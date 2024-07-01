@@ -30,6 +30,18 @@ func userGet(ctx *gin.Context) {
 				Demand: ptr(1000),
 				Debt:   nil,
 			},
+			{
+				Id:     "5f7b7b7b7b7b7b7b7b7b7b7c",
+				Title:  "Milad Rezaei",
+				Demand: ptr(2000),
+				Debt:   nil,
+			},
+			{
+				Id:     "5f7b7b7b7b7b7b7b7b7b7b7A",
+				Title:  "Milad Rezaei",
+				Demand: nil,
+				Debt:   ptr(4000),
+			},
 		},
 	})
 }
