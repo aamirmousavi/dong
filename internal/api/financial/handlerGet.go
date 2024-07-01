@@ -34,10 +34,10 @@ func get(ctx *gin.Context) {
 	}
 
 	factors, err := app.Mongo().PeroidHandler.FactorListByUser(profile.User.Id)
-	// if err != nil {
-	// 	ctx.JSON(500, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	for _, f := range factors {
 		buyerUser, err := app.Mongo().UserHandler.GetById(ctx, f.Buyer)
 		if err != nil {

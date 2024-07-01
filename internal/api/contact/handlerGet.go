@@ -68,5 +68,6 @@ func get(ctx *gin.Context) {
 		"data":     cnct,
 		"peroids":  peroids,
 		"payments": payments,
+		"factors":  factors,
 	})
 }
