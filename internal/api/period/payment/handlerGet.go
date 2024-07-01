@@ -29,7 +29,17 @@ func get(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	payment.SourceUserName = lib.Ptr("source user name")
-	payment.TargetUserName = lib.Ptr("target user name")
+	sourceUser, err := app.Mongo().UserHandler.GetById(ctx, payment.SourceUserId)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	targetUser, err := app.Mongo().UserHandler.GetById(ctx, payment.TargetUserId)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	payment.SourceUserName = lib.Ptr(sourceUser.FirstName + " " + sourceUser.LastName)
+	payment.TargetUserName = lib.Ptr(targetUser.FirstName + " " + targetUser.LastName)
 	ctx.JSON(200, gin.H{"payment": payment})
 }

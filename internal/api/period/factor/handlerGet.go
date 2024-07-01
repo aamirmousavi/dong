@@ -30,7 +30,12 @@ func get(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	factor.BuyerName = lib.Ptr("buyer name")
+	buyerUser, err := app.Mongo().UserHandler.GetById(ctx, factor.Buyer)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	factor.BuyerName = lib.Ptr(buyerUser.FirstName + " " + buyerUser.LastName)
 	ctx.JSON(200, gin.H{
 		"data": factor,
 	})

@@ -35,6 +35,20 @@ func (hand *UserHandler) Create(
 	return err
 }
 
+func (hand *UserHandler) GetById(
+	ctx context.Context,
+	id primitive.ObjectID,
+) (*User, error) {
+	usr := new(User)
+	err := hand.user.FindOne(
+		ctx,
+		bson.M{
+			"_id": id,
+		},
+	).Decode(usr)
+	return usr, err
+}
+
 func (hand *UserHandler) Get(
 	ctx context.Context,
 	number string,

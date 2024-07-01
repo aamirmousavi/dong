@@ -30,7 +30,12 @@ func list(ctx *gin.Context) {
 		return
 	}
 	for _, f := range factors {
-		f.BuyerName = lib.Ptr("buyer name")
+		buyerUser, err := app.Mongo().UserHandler.GetById(ctx, f.Buyer)
+		if err != nil {
+			ctx.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		f.BuyerName = lib.Ptr(buyerUser.FirstName + " " + buyerUser.LastName)
 	}
 	ctx.JSON(200, gin.H{
 		"data": factors,
