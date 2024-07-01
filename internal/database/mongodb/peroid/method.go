@@ -12,7 +12,7 @@ func (hand *PeroidHandler) ListWithContact(
 	contactUserId primitive.ObjectID,
 ) ([]*Peroid, error) {
 	cursor, err := hand.peroid.Find(context.Background(), bson.M{
-		"$and": []bson.M{
+		"$or": []bson.M{
 			{"user_id": userId},
 			{"user_ids": bson.M{"$in": []primitive.ObjectID{userId}}},
 		},
