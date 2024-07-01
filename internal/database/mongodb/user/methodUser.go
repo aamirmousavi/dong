@@ -46,6 +46,9 @@ func (hand *UserHandler) GetById(
 			"_id": id,
 		},
 	).Decode(usr)
+	if err != nil {
+		return usr, nil
+	}
 	return usr, err
 }
 
