@@ -2,9 +2,6 @@ package splitwise
 
 import (
 	"container/heap"
-	"fmt"
-
-	"github.com/aamirmousavi/dong/lib"
 )
 
 type node[T comparable] struct {
@@ -48,9 +45,7 @@ type paymentNode[T comparable] struct {
 
 func newGraph[T comparable](expenses map[T]Expense[T]) *graph[T] {
 	balances := simulateExpense(expenses)
-	fmt.Printf("balances: %v\n", lib.ToJsonIndent(balances))
 	paymentNodes := calculatePaymentNodes(balances)
-	fmt.Printf("paymentNodes: %v\n", lib.ToJsonIndent(paymentNodes))
 	return &graph[T]{payments: paymentNodes}
 }
 
