@@ -38,6 +38,11 @@ func NewFactor(
 	}
 }
 
+func (f *Factor) SetId(id primitive.ObjectID) *Factor {
+	f.Id = id
+	return f
+}
+
 func (f *Factor) GenerateId() *Factor {
 	f.Id = primitive.NewObjectID()
 	return f

@@ -66,13 +66,7 @@ func add(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	payments, err := app.Mongo().BalanceHandler.PaymentList(&peroidId, nil)
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	peroid.Payments = &payments
-	peroid.AddFactor(factor)
+	peroid.AddFactor(factor, false)
 	if err := app.Mongo().PeroidHandler.FactorCalculatedBalanceAdd(&peroidId, peroid.Balances); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -88,14 +82,18 @@ func add(ctx *gin.Context) {
 				*calBalacne.Demand,
 				false,
 			))
-			for _, reletiveCalBalance := range *calBalacne.ReletiveFactorCalculatedBalances {
-				balanceList = append(balanceList, balance.NewBalance(
-					&peroidId,
-					calBalacne.UserId,
-					reletiveCalBalance.UserId,
-					*reletiveCalBalance.Debt,
-					false,
-				))
+			if calBalacne.ReletiveFactorCalculatedBalances != nil {
+				for _, reletiveCalBalance := range *calBalacne.ReletiveFactorCalculatedBalances {
+					if reletiveCalBalance.Debt != nil {
+						balanceList = append(balanceList, balance.NewBalance(
+							&peroidId,
+							calBalacne.UserId,
+							reletiveCalBalance.UserId,
+							*reletiveCalBalance.Debt,
+							false,
+						))
+					}
+				}
 			}
 		}
 	}

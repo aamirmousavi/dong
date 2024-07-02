@@ -70,7 +70,7 @@ func add(ctx *gin.Context) {
 			}
 			pic = &imageAddr
 		}
-		newUser := user.NewUser(params.Number, *params.FirstName, *params.LastName, pic).SetId(id)
+		newUser := user.NewUser(*params.FirstName, *params.LastName, params.Number, pic).SetId(id)
 		if err := app.Mongo().UserHandler.Create(ctx, newUser); err != nil {
 			ctx.JSON(500, gin.H{"error": err.Error()})
 			return

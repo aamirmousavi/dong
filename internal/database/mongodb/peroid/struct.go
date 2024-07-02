@@ -2,6 +2,7 @@ package peroid
 
 import (
 	"github.com/aamirmousavi/dong/internal/database/mongodb/balance"
+	"github.com/aamirmousavi/dong/internal/splitwise"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -21,6 +22,8 @@ type Peroid struct {
 	Factors  *FactorList                  `bson:"factors,omitempty" json:"factors,omitempty"`
 	Balances *FactorCalculatedBalanceList `bson:"balances,omitempty" json:"balances,omitempty"`
 	Payments *balance.PaymentList         `bson:"payments,omitempty" json:"payments,omitempty"`
+
+	PeroidSplitwise *splitwise.Peroid[primitive.ObjectID] `bson:"peroid_splitwise,omitempty" json:"peroid_splitwise,omitempty"`
 }
 
 func NewPeroid(
@@ -32,15 +35,21 @@ func NewPeroid(
 		UserId:  userId,
 		Title:   title,
 		UserIds: userIds,
+		PeroidSplitwise: &splitwise.Peroid[primitive.ObjectID]{
+			Transactions: &splitwise.TransactionList[primitive.ObjectID]{},
+			Factors:      &splitwise.FactorList[primitive.ObjectID]{},
+		},
 	}
 }
 
 func (p *Peroid) SetId(id primitive.ObjectID) *Peroid {
 	p.Id = id
+	p.PeroidSplitwise.Id = id
 	return p
 }
 
 func (p *Peroid) GenerateId() *Peroid {
 	p.Id = primitive.NewObjectID()
+	p.PeroidSplitwise.Id = p.Id
 	return p
 }

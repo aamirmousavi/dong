@@ -4,6 +4,7 @@ import (
 	interfaces_context "github.com/aamirmousavi/dong/interfaces/context"
 	interfaces_profile "github.com/aamirmousavi/dong/interfaces/profile"
 	"github.com/aamirmousavi/dong/internal/database/mongodb/balance"
+	"github.com/aamirmousavi/dong/internal/database/mongodb/peroid"
 	"github.com/aamirmousavi/dong/utils/bind"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -63,46 +64,55 @@ func add(ctx *gin.Context) {
 	}
 
 	if payment.PeroidId != nil {
-		peroid, err := app.Mongo().PeroidHandler.GetWithFactors(*payment.PeroidId, nil)
+		peroidData, err := app.Mongo().PeroidHandler.GetWithFactors(*payment.PeroidId, nil)
 		if err != nil {
 			ctx.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
-		payments, err := app.Mongo().BalanceHandler.PaymentList(payment.PeroidId, nil)
-		if err != nil {
-			ctx.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		peroid.Payments = &payments
-		peroid.Recalculate()
-		if err := app.Mongo().PeroidHandler.FactorCalculatedBalanceAdd(&peroid.Id, peroid.Balances); err != nil {
+		peroidData.AddFactor(&peroid.Factor{
+			Id:    payment.Id,
+			Price: payment.Amount,
+			Buyer: payment.SourceUserId,
+			Users: []peroid.UserWithCoefficient{
+				{
+					UserId:      payment.TargetUserId,
+					Coefficient: 1,
+				},
+			},
+			PeroidId: *payment.PeroidId,
+		}, true)
+		if err := app.Mongo().PeroidHandler.FactorCalculatedBalanceAdd(&peroidData.Id, peroidData.Balances); err != nil {
 			ctx.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
 
 		balanceList := make(balance.BalanceList, 0)
-		for _, calBalacne := range *peroid.Balances {
+		for _, calBalacne := range *peroidData.Balances {
 			if calBalacne.Demand != nil {
 				balanceList = append(balanceList, balance.NewBalance(
-					&peroid.Id,
+					&peroidData.Id,
 					calBalacne.UserId,
 					calBalacne.UserId,
 					*calBalacne.Demand,
 					false,
 				))
-				for _, reletiveCalBalance := range *calBalacne.ReletiveFactorCalculatedBalances {
-					balanceList = append(balanceList, balance.NewBalance(
-						&peroid.Id,
-						calBalacne.UserId,
-						reletiveCalBalance.UserId,
-						*reletiveCalBalance.Debt,
-						false,
-					))
+				if calBalacne.ReletiveFactorCalculatedBalances != nil {
+					for _, reletiveCalBalance := range *calBalacne.ReletiveFactorCalculatedBalances {
+						if reletiveCalBalance.Debt != nil {
+							balanceList = append(balanceList, balance.NewBalance(
+								&peroidData.Id,
+								calBalacne.UserId,
+								reletiveCalBalance.UserId,
+								*reletiveCalBalance.Debt,
+								false,
+							))
+						}
+					}
 				}
 			}
 		}
 
-		if err := app.Mongo().BalanceHandler.Add(&peroid.Id, balanceList); err != nil {
+		if err := app.Mongo().BalanceHandler.Add(&peroidData.Id, balanceList); err != nil {
 			ctx.JSON(500, gin.H{"error": err.Error()})
 			return
 		}

@@ -7,6 +7,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+func (hand *PeroidHandler) FactorUpdate(factor *Factor) error {
+	_, err := hand.factor.ReplaceOne(context.Background(), bson.M{"_id": factor.Id}, factor)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (hand *PeroidHandler) FactorAdd(
 	factor *Factor,
 ) error {
