@@ -12,7 +12,7 @@ type Payment struct {
 	TargetUserId   primitive.ObjectID  `bson:"target_user_id" json:"target_user_id"`
 	SourceUserName *string             `bson:"source_user_name,omitempty" json:"source_user_name,omitempty"`
 	TargetUserName *string             `bson:"target_user_name,omitempty" json:"target_user_name,omitempty"`
-	Amount         uint64              `bson:"amount" json:"amount"`
+	Amount         int                 `bson:"amount" json:"amount"`
 	// Incoming <= true
 }
 
@@ -21,7 +21,7 @@ func NewPayment(
 	peroidId *primitive.ObjectID,
 	sourceUserId primitive.ObjectID,
 	targetUserId primitive.ObjectID,
-	amount uint64,
+	amount int,
 ) *Payment {
 	return &Payment{
 		Title:        title,

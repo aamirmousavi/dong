@@ -10,7 +10,7 @@ import (
 
 var (
 	addr        = ":8080"
-	mongodbAddr = "mongodb://127.0.0.1:27017"
+	mongodbAddr = "mongodb://192.168.1.3:27017"
 	smsUsername = ""
 	smsPassword = ""
 )
@@ -22,7 +22,7 @@ func init() {
 	ServerCmd.Flags().StringVarP(&smsPassword, "sms-password", "p", smsPassword, "sms password")
 	hasConfig := false
 	ServerCmd.Flags().BoolVarP(&hasConfig, "config", "c", hasConfig, "use config file")
-	hasConfig = true
+	// hasConfig = true
 	if hasConfig {
 		if err := loadConfig(); err != nil {
 			fmt.Fprintln(os.Stderr, err)

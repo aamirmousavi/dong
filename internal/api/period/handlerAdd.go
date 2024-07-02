@@ -45,7 +45,7 @@ func add(ctx *gin.Context) {
 		p.Title,
 		userIds,
 	).GenerateId()
-	per.UserCount = uint64(len(oids))
+	per.UserCount = uint64(len(oids)) + 1
 	if err := app.Mongo().PeroidHandler.Add(per); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return

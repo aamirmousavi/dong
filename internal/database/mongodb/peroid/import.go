@@ -5,9 +5,10 @@ import (
 )
 
 type PeroidHandler struct {
-	database *mongo.Database
-	peroid   *mongo.Collection
-	factor   *mongo.Collection
+	database                *mongo.Database
+	peroid                  *mongo.Collection
+	factor                  *mongo.Collection
+	factorCalculatedBalance *mongo.Collection
 }
 
 func NewHandler(
@@ -17,5 +18,6 @@ func NewHandler(
 		database,
 		database.Collection(_COLLECTION_PEROID),
 		database.Collection(_COLLECTION_FACTOR),
+		database.Collection(_COLLECTION_BALANCE),
 	}
 }

@@ -1,6 +1,9 @@
 package peroid
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"github.com/aamirmousavi/dong/internal/database/mongodb/balance"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Peroid struct {
 	Id      primitive.ObjectID   `bson:"_id" json:"id"`
@@ -9,9 +12,15 @@ type Peroid struct {
 	UserIds []primitive.ObjectID `bson:"user_ids" json:"user_ids"`
 
 	UserCount   uint64 `bson:"user_count" json:"user_count"`
-	TotalPrice  uint64 `bson:"total_price" json:"total_price"`
-	AvgPrice    uint64 `bson:"avg_price" json:"avg_price"`
-	TotalFactor uint64 `bson:"total_factor" json:"total_factor"`
+	TotalPrice  int    `bson:"total_price" json:"total_price"`
+	AvgPrice    int    `bson:"avg_price" json:"avg_price"`
+	TotalFactor int    `bson:"total_factor" json:"total_factor"`
+
+	MoneySpend map[primitive.ObjectID]int `bson:"money_spend" json:"money_spend"`
+
+	Factors  *FactorList                  `bson:"factors,omitempty" json:"factors,omitempty"`
+	Balances *FactorCalculatedBalanceList `bson:"balances,omitempty" json:"balances,omitempty"`
+	Payments *balance.PaymentList         `bson:"payments,omitempty" json:"payments,omitempty"`
 }
 
 func NewPeroid(

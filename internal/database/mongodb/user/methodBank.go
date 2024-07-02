@@ -5,6 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -33,7 +34,7 @@ func (hand *UserHandler) GetBank(
 		bson.M{
 			"_id": id,
 		},
-	).Decode(&bank); err != nil {
+	).Decode(&bank); err != nil && err != mongo.ErrNoDocuments {
 		return nil, err
 	}
 	return bank, nil

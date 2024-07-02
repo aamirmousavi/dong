@@ -39,27 +39,42 @@ func userList(ctx *gin.Context) {
 	type Person struct {
 		Id         string  `json:"id"`
 		Name       string  `json:"name"`
-		MoneySpend uint64  `json:"money_spend"`
-		Demand     *uint64 `json:"demand"`
-		Debt       *uint64 `json:"debt"`
+		MoneySpend int     `json:"money_spend"`
+		Demand     *int    `json:"demand"`
+		Debt       *int    `json:"debt"`
 		CardNumber *string `json:"card_number"`
 	}
+
+	balances, err := app.Mongo().PeroidHandler.FactorCalculatedBalanceGet(oid)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
 	profile := interfaces_profile.GetProfile(ctx)
 	profileCard, err := app.Mongo().GetBank(profile.User.Id)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	periodUsers := []Person{
-		{
-			Id:         profile.User.Id.Hex(),
-			Name:       profile.User.FirstName + " " + profile.User.LastName,
-			MoneySpend: 2000,
-			Demand:     nil,
-			Debt:       nil,
-			CardNumber: &profileCard.CardNumber,
-		},
+	profilePerson := Person{
+		Id:         profile.User.Id.Hex(),
+		Name:       profile.User.FirstName + " " + profile.User.LastName,
+		MoneySpend: peroid.MoneySpend[profile.User.Id],
+		Demand:     nil,
+		Debt:       nil,
+		CardNumber: &profileCard.CardNumber,
 	}
+	profileBalance, ok := balances.Find(profile.User.Id)
+	if ok {
+		if profileBalance.Demand != nil {
+			profilePerson.Demand = profileBalance.Demand
+		}
+		if profileBalance.Debt != nil {
+			profilePerson.Debt = profileBalance.Debt
+		}
+	}
+	periodUsers := []Person{profilePerson}
 	for _, user := range users {
 		card, err := app.Mongo().GetBank(user.Id)
 		if err != nil {
@@ -67,14 +82,25 @@ func userList(ctx *gin.Context) {
 			return
 		}
 
-		periodUsers = append(periodUsers, Person{
+		userPerson := Person{
 			Id:         user.Id.Hex(),
 			Name:       user.FirstName + " " + user.LastName,
-			MoneySpend: 1000,
+			MoneySpend: peroid.MoneySpend[user.Id],
 			Demand:     nil,
 			Debt:       nil,
 			CardNumber: &card.CardNumber,
-		})
+		}
+		balance, ok := balances.Find(user.Id)
+		if ok {
+			if balance.Demand != nil {
+				userPerson.Demand = balance.Demand
+			}
+			if balance.Debt != nil {
+				userPerson.Debt = balance.Debt
+			}
+		}
+
+		periodUsers = append(periodUsers, userPerson)
 	}
 
 	ctx.JSON(200, gin.H{

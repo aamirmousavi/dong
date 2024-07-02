@@ -5,6 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (hand *PeroidHandler) ListWithContact(
@@ -36,6 +37,49 @@ func (hand *PeroidHandler) Add(
 		return err
 	}
 	return nil
+}
+
+func (hand *PeroidHandler) GetWithFactors(
+	id primitive.ObjectID,
+	excludeFactorId *primitive.ObjectID,
+) (*Peroid, error) {
+	peroid := &Peroid{}
+	factorLookUp := bson.M{
+		"from":         _COLLECTION_FACTOR,
+		"localField":   "_id",
+		"foreignField": "peroid_id",
+		"as":           "factors",
+	}
+	if excludeFactorId != nil {
+		factorLookUp["pipeline"] = []bson.M{
+			{"$match": bson.M{"_id": bson.M{"$ne": excludeFactorId}}},
+		}
+	}
+	cursor, err := hand.peroid.Aggregate(
+		context.Background(),
+		[]bson.M{
+			{"$match": bson.M{"_id": id}},
+			{"$lookup": factorLookUp},
+			{"$lookup": bson.M{
+				"from":         _COLLECTION_BALANCE,
+				"localField":   "_id",
+				"foreignField": "peroid_id",
+				"as":           "balances",
+			}},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	if cursor.Next(context.Background()) {
+		if err := cursor.Decode(peroid); err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, mongo.ErrNoDocuments
+	}
+	return peroid, nil
 }
 
 func (hand *PeroidHandler) Get(
@@ -122,43 +166,10 @@ func (hand *PeroidHandler) AddUser(
 	return nil
 }
 
-func (hand *PeroidHandler) UpdateTotalPrice(
-	id primitive.ObjectID,
-	totalPrice uint64,
-) error {
-	_, err := hand.peroid.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$set": bson.M{"total_price": totalPrice}})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (hand *PeroidHandler) UpdateAvgPrice(
-	id primitive.ObjectID,
-	avgPrice uint64,
-) error {
-	_, err := hand.peroid.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$set": bson.M{"avg_price": avgPrice}})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (hand *PeroidHandler) UpdateTotalFactor(
-	id primitive.ObjectID,
-	totalFactor uint64,
-) error {
-	_, err := hand.peroid.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$set": bson.M{"total_factor": totalFactor}})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (hand *PeroidHandler) UpdateAll(
 	peroid *Peroid,
 ) error {
-	_, err := hand.peroid.ReplaceOne(context.Background(), bson.M{"_id": peroid.Id}, peroid)
+	_, err := hand.peroid.UpdateOne(context.Background(), bson.M{"_id": peroid.Id}, bson.M{"$set": peroid})
 	if err != nil {
 		return err
 	}

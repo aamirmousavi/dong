@@ -13,11 +13,11 @@ import (
 type addRequest struct {
 	PeroidId string `json:"peroid_id" binding:"required"`
 	Title    string `json:"title" binding:"required"`
-	Price    uint64 `json:"price" binding:"required"`
+	Price    int    `json:"price" binding:"required"`
 	Buyer    string `json:"buyer" binding:"required"`
 	Users    []struct {
 		UserId      string `json:"user_id" binding:"required"`
-		Coefficient uint64 `json:"coefficient" binding:"required"`
+		Coefficient int    `json:"coefficient" binding:"required"`
 	} `json:"users" binding:"required"`
 }
 
@@ -61,30 +61,56 @@ func add(ctx *gin.Context) {
 		peroidId,
 	).GenerateId()
 
-	/*
-		Go create balance for each user in factor
-		user.each(
-			userPrice = (p.price / sumofCoefficient) * user.coefficient
-		)
-	*/
+	peroid, err := app.Mongo().PeroidHandler.GetWithFactors(peroidId, nil)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	payments, err := app.Mongo().BalanceHandler.PaymentList(&peroidId, nil)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	peroid.Payments = &payments
+	peroid.AddFactor(factor)
+	if err := app.Mongo().PeroidHandler.FactorCalculatedBalanceAdd(&peroidId, peroid.Balances); err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 
 	balanceList := make(balance.BalanceList, 0)
-	sumOfCoefficient := uint64(0)
-	for _, user := range factor.Users {
-		sumOfCoefficient += user.Coefficient
-	}
-	for _, user := range factor.Users {
-		userPrice := (factor.Price / sumOfCoefficient) * user.Coefficient
-		balanceList = append(balanceList, balance.NewBalance(
-			peroidId,
-			factor.PeroidId,
-			factor.Buyer,
-			user.UserId,
-			userPrice,
-		))
+	for _, calBalacne := range *peroid.Balances {
+		if calBalacne.Demand != nil {
+			balanceList = append(balanceList, balance.NewBalance(
+				&peroidId,
+				calBalacne.UserId,
+				calBalacne.UserId,
+				*calBalacne.Demand,
+				false,
+			))
+			for _, reletiveCalBalance := range *calBalacne.ReletiveFactorCalculatedBalances {
+				balanceList = append(balanceList, balance.NewBalance(
+					&peroidId,
+					calBalacne.UserId,
+					reletiveCalBalance.UserId,
+					*reletiveCalBalance.Debt,
+					false,
+				))
+			}
+		}
 	}
 
-	if err := app.Mongo().BalanceHandler.Add(balanceList...); err != nil {
+	if err := app.Mongo().BalanceHandler.Add(&peroidId, balanceList); err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	{
+		peroid.Factors = nil
+		peroid.Balances = nil
+	}
+
+	if err := app.Mongo().PeroidHandler.UpdateAll(peroid); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
@@ -95,20 +121,4 @@ func add(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, factor)
-
-	/*
-		Reaclculate money
-		user [A] must give user [B] 100$
-		and user [B] must give user [C] 20$
-		and user [C] must give user [A] 10$
-
-		we remove bepending depths
-		then user [A] must give user [B] 100$ - 10$ = 90$
-		and user [B] must give user [C] 20$ - 10$ = 10$
-
-		factor.each(
-
-		)
-	*/
-
 }
